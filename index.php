@@ -8,7 +8,7 @@
 
         <link rel="stylesheet" type="text/css" href="/picture-sync/css/app.css">
 
-        <title>Jean de Klerk</title>
+        <title>Picture Sync</title>
     </head>
     <body>
         <div class="container ps-main">
