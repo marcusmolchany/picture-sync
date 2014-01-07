@@ -6,6 +6,8 @@
         <script type="text/javascript" src="/picture-sync/js/jquery/jquery-2.0.3.min.js"></script>
         <script type="text/javascript" src="/picture-sync/js/bootstrap/bootstrap.min.js"></script>
 
+        <script type="text/javascript" src="/picture-sync/js/require/require-2.1.9.js"></script>
+
         <link rel="stylesheet" type="text/css" href="/picture-sync/css/app.css">
 
         <title>Picture Sync</title>
