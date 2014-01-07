@@ -8396,6 +8396,14 @@ code {
   margin-bottom: 10px;
 }
 
+.ps-centered {
+  text-align: center;
+}
+
+.ps-max-width {
+  width: 100%;
+}
+
 .ps-header {
   border-radius: 0;
   background-color: white;

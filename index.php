@@ -28,7 +28,25 @@
                 </div>
             </nav>
 
-            Body
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-4">
+                        <h3>Twitter</h3>
+                        <img class="ps-max-width" src="img/download.png" alt="..." class="img-rounded">
+                        <div class="ps-centered">Your profile pic</div>
+                    </div>
+                    <div class="col-md-4">
+                        <h3>Facebook</h3>
+                        <img class="ps-max-width" src="img/download.png" alt="..." class="img-rounded">
+                        <div class="ps-centered">Your profile pic</div>
+                    </div>
+                    <div class="col-md-4">
+                        <h3>Instagram?</h3>
+                        <img class="ps-max-width" src="img/download.png" alt="..." class="img-rounded">
+                        <div class="ps-centered">Your profile pic</div>
+                    </div>
+                </div>
+            </div>
 
             <div class="ps-footer-root"></div>
         </div>
