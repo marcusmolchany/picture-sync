@@ -2,9 +2,9 @@ require.config({
     baseUrl: '/picture-sync/js/',
     urlArgs: "bust=" + (new Date()).getTime(),
     paths: {
-        'jquery': 'jquery/jquery-2.0.3.min',
-        'jqueryuiwidget': 'jqueryui/jquery.ui.widget',
-        'bootstrap': 'bootstrap/bootstrap.min',
+        'jquery': 'externals/jquery/jquery-2.0.3.min',
+        'jqueryuiwidget': 'externals/jqueryui/jquery.ui.widget',
+        'bootstrap': 'externals/bootstrap/bootstrap.min',
     },
 
     // Configure the dependencies and exports for older, traditional "browser globals" - 
@@ -23,8 +23,8 @@ require.config({
 
 require([
         'jquery',
-        'twitter/twitter_widget',
-        'facebook/facebook_widget'
+        'modules/twitter/twitter_widget',
+        'modules/facebook/facebook_widget'
     ], 
     function ($, jquerynewmodule, jqueryoldmodule) {
         $(document).ready(function() {
