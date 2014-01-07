@@ -3,10 +3,7 @@
     <head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        <script type="text/javascript" src="/picture-sync/js/jquery/jquery-2.0.3.min.js"></script>
-        <script type="text/javascript" src="/picture-sync/js/bootstrap/bootstrap.min.js"></script>
-
-        <script type="text/javascript" src="/picture-sync/js/require/require-2.1.9.js"></script>
+        <script data-main="js/main" src="/picture-sync/js/require/require-2.1.9.js"></script>
 
         <link rel="stylesheet" type="text/css" href="/picture-sync/css/app.css">
 
