@@ -33,20 +33,20 @@
                     <div class="col-md-4">
                         <h3>Twitter</h3>
                         <img class="ps-max-width" src="img/download.png" alt="..." class="img-rounded">
-                        <div class="ps-centered">Your profile pic</div>
-                        <button type="button" class="btn btn-primary">Upload and change</button>
+                        <div class="ps-js-upload ps-upload ps-centered">Your profile pic</div>
+                        <button type="button" class="ps-max-width btn btn-primary">Upload and change</button>
                     </div>
                     <div class="col-md-4">
                         <h3>Facebook</h3>
                         <img class="ps-max-width" src="img/download.png" alt="..." class="img-rounded">
-                        <div class="ps-centered">Your profile pic</div>
-                        <button type="button" class="btn btn-success">Upload and change</button>
+                        <div class="ps-js-upload ps-upload ps-centered">Your profile pic</div>
+                        <button type="button" class="ps-max-width btn btn-success">Upload and change</button>
                     </div>
                     <div class="col-md-4">
                         <h3>Instagram?</h3>
                         <img class="ps-max-width" src="img/download.png" alt="..." class="img-rounded">
-                        <div class="ps-centered">Your profile pic</div>
-                        <button type="button" class="btn btn-danger">Upload and change</button>
+                        <div class="ps-js-upload ps-upload ps-centered">Your profile pic</div>
+                        <button type="button" class="ps-max-width btn btn-danger">Upload and change</button>
                     </div>
                 </div>
             </div>

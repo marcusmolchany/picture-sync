@@ -8404,6 +8404,11 @@ code {
   width: 100%;
 }
 
+.ps-upload {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
 .ps-header {
   border-radius: 0;
   background-color: white;
