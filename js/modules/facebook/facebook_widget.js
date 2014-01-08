@@ -19,28 +19,37 @@ define(['jquery', 'facebookAll', 'jqueryuiwidget'], function ($, FB) {
             });
 
             FB.Event.subscribe('auth.authResponseChange', function(response) {
-                console.dir("authResponseChange occurred");
-                console.dir(response);
-
                 if (response.status == "connected") {
-                    self.setProfileName();
+                    self.setupProfile();
                 } else {
-                    console.dir("Something went wrong. Check out the response above ^");
+                    console.dir("Something went wrong with login. Check out the response above ^");
                 }
             });
 
             FB.login();
         },
 
+        setupProfile: function() {
+            var self = this;
+
+            self.setProfileName();
+            self.setProfilePicture();
+        },
+
         setProfileName: function() {
-            var profileName;
+            var self = this;
 
             FB.api('/me', function(response) {
-                console.dir("This is me");
-                profileName = response.name;
+                $(self.element).children(".ps-js-profile-name").text(response.name);
             });
+        },
 
-            $(this.element).children(".ps-js-profile-name").text(profileName);
+        setProfilePicture: function() {
+            var self = this;
+
+            FB.api('/me/picture', function(response) {
+                $(self.element).children(".ps-js-profile-pic").attr('src', response.data.url);
+            });
         }
     });
 });
