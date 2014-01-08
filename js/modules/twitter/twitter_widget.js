@@ -11,7 +11,7 @@ define(['jquery', 'jqueryuiwidget'], function ($) {
         setProfileName: function() {
             var myProfileName = "My profile name!";
 
-            // do some ajax things with facebook
+            // do some ajax things with twitter
             // get the person's profile name
             // put it into myProfileName
 

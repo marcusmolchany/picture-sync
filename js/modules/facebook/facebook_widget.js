@@ -23,9 +23,7 @@ define(['jquery', 'facebookAll', 'jqueryuiwidget'], function ($, FB) {
                 console.dir(response);
 
                 if (response.status == "connected") {
-                    FB.api('/me', function(response) {
-                        self.setProfileName(response.name);
-                    });
+                    self.setProfileName();
                 } else {
                     console.dir("Something went wrong. Check out the response above ^");
                 }
@@ -34,8 +32,15 @@ define(['jquery', 'facebookAll', 'jqueryuiwidget'], function ($, FB) {
             FB.login();
         },
 
-        setProfileName: function(name) {
-            $(this.element).children(".ps-js-profile-name").text(name);
+        setProfileName: function() {
+            var profileName;
+
+            FB.api('/me', function(response) {
+                console.dir("This is me");
+                profileName = response.name;
+            });
+
+            $(this.element).children(".ps-js-profile-name").text(profileName);
         }
     });
 });
