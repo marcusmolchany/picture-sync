@@ -10,6 +10,7 @@
         <title>Picture Sync</title>
     </head>
     <body>
+        <div id="fb-root"></div>
         <div class="container ps-main">
             <nav class="navbar navbar-default ps-header" role="navigation">
                 <div class="navbar-header">
@@ -32,19 +33,19 @@
                     <div class="col-md-4 ps-js-twitter">
                         <h3>Twitter</h3>
                         <img class="ps-max-width" src="img/download.png" alt="..." class="img-rounded">
-                        <div class="ps-js-profile-name ps-profile-name ps-centered">Your profile pic</div>
+                        <div class="ps-js-profile-name ps-profile-name ps-centered">Your profile name</div>
                         <button type="button" class="ps-js-upload ps-max-width btn btn-primary">Upload and change</button>
                     </div>
                     <div class="col-md-4 ps-js-facebook">
                         <h3>Facebook</h3>
                         <img class="ps-max-width" src="img/download.png" alt="..." class="img-rounded">
-                        <div class="ps-js-profile-name ps-profile-name ps-centered">Your profile pic</div>
+                        <div class="ps-js-profile-name ps-profile-name ps-centered">Your profile name</div>
                         <button type="button" class="ps-js-upload ps-max-width btn btn-success">Upload and change</button>
                     </div>
                     <div class="col-md-4 ps-js-instragram">
                         <h3>Instagram?</h3>
                         <img class="ps-max-width" src="img/download.png" alt="..." class="img-rounded">
-                        <div class="ps-js-profile-name ps-profile-name ps-centered">Your profile pic</div>
+                        <div class="ps-js-profile-name ps-profile-name ps-centered">Your profile name</div>
                         <button type="button" class="ps-js-upload ps-max-width btn btn-danger">Upload and change</button>
                     </div>
                 </div>

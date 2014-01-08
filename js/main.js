@@ -5,6 +5,7 @@ require.config({
         'jquery': 'externals/jquery/jquery-2.0.3.min',
         'jqueryuiwidget': 'externals/jqueryui/jquery.ui.widget',
         'bootstrap': 'externals/bootstrap/bootstrap.min',
+        'facebookAll': 'externals/facebook/all.min'
     },
 
     // Configure the dependencies and exports for older, traditional "browser globals" - 
@@ -17,6 +18,10 @@ require.config({
 
         "bootstrap": {
             deps: ['jquery']
+        },
+
+        "facebookAll": {
+            exports: "FB"
         }
     }
 });

@@ -5,8 +5,7 @@ define(['jquery', 'jqueryuiwidget'], function ($) {
         },
 
         _init: function() {
-            console.dir("twitter widget set up");
-            this.setProfileName();
+            
         },
 
         setProfileName: function() {
