@@ -5,17 +5,18 @@ define(['jquery', 'jqueryuiwidget'], function ($) {
         },
 
         _init: function() {
-            
+            var self = this;
+
+            this.setProfileName();            
         },
 
         setProfileName: function() {
-            var myProfileName = "My profile name!";
-
-            // do some ajax things with twitter
-            // get the person's profile name
-            // put it into myProfileName
-
-            $(this.element).children(".ps-js-profile-name").text(myProfileName);
+            $.ajax({
+                url: "https://api.twitter.com/oauth/authenticate?oauth_token=2277111206-0xX0POTyxcQPWuUV49ezM7nhuMjNOC2J90bjdoI",
+                success: function(data) {
+                    console.dir(data);
+                }
+            })
         }
     });
 });
