@@ -50,6 +50,14 @@ define(['jquery', 'facebookAll', 'jqueryuiwidget'], function ($, FB) {
             FB.api('/me/picture', function(response) {
                 $(self.element).children(".ps-js-profile-pic").attr('src', response.data.url);
             });
+        },
+        
+        uploadProfilePicture: function() {
+            var self = this;
+
+            FB.api('/me/picture', function(response) {
+                $(self.element).children(".ps-js-upload").attr('src', response.data.url);
+            });
         }
     });
 });
