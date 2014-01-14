@@ -25,8 +25,9 @@ func main() {
     http.Handle("/img/", fileServer)
 
     gplus.Connect()
+    gplus.GetRequest("https://www.googleapis.com/plus/v1/activities?query=hello&key=AIzaSyATrgLzeMVYdQemwyzhmbTrE4oYB2-sQp0")
 
-    err := http.ListenAndServe(":8080", nil)
+    err := http.ListenAndServe(":80", nil)
     checkError(err)
 }
 
