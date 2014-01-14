@@ -5,6 +5,7 @@ import (
     "net/http"
     "os"
     "fmt"
+    "picture-sync/src/gplus"
 )
 
 type Page struct {
@@ -22,6 +23,8 @@ func main() {
 
     fileServer = http.StripPrefix("/img/", http.FileServer(http.Dir("img")))
     http.Handle("/img/", fileServer)
+
+    gplus.Connect()
 
     err := http.ListenAndServe(":8080", nil)
     checkError(err)

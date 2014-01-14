@@ -1,20 +1,20 @@
-package twitter
+package gplus
 
 import (
-"flag"
-"fmt"
-"io"
-"log"
-"os"
+    "flag"
+    "fmt"
+    "io"
+    "log"
+    "os"
 
-"code.google.com/p/goauth2/oauth"
+    "code.google.com/p/goauth2/oauth"
 )
 
 var (
-    clientId     = flag.String("id", "", "Client ID")
-    clientSecret = flag.String("secret", "", "Client Secret")
+    clientId     = flag.String("id", "320731813162.apps.googleusercontent.com", "Client ID")
+    clientSecret = flag.String("secret", "JDKYH4I4AOpHkT18zdUlvSay", "Client Secret")
     scope        = flag.String("scope", "https://www.googleapis.com/auth/userinfo.profile", "OAuth scope")
-    redirectURL  = flag.String("redirect_url", "oob", "Redirect URL")
+    redirectURL  = flag.String("redirect_url", "http://localhost:8080/", "Redirect URL")
     authURL      = flag.String("auth_url", "https://accounts.google.com/o/oauth2/auth", "Authentication URL")
     tokenURL     = flag.String("token_url", "https://accounts.google.com/o/oauth2/token", "Token URL")
     requestURL   = flag.String("request_url", "https://www.googleapis.com/oauth2/v1/userinfo", "API request")
