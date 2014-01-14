@@ -1,5 +1,5 @@
 require.config({
-    baseUrl: '/picture-sync/js/',
+    baseUrl: '/js/',
     urlArgs: "bust=" + (new Date()).getTime(),
     paths: {
         'jquery': 'externals/jquery/jquery-2.0.3.min',
