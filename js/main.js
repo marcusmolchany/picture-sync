@@ -33,8 +33,8 @@ require([
     ], 
     function ($, jquerynewmodule, jqueryoldmodule) {
         $(document).ready(function() {
-            $(".ps-js-twitter").twitterSync();
-            $(".ps-js-facebook").facebookSync();
+            // $(".ps-js-twitter").twitterSync();
+            // $(".ps-js-facebook").facebookSync();
         });
     }
 );
