@@ -32,7 +32,7 @@ Once you have completed the OAuth flow, the credentials should be stored inside
 the file specified by -cache and you may run without the -id and -secret flags.
 `
 
-func Connect() {
+func Connect() (string) {
     flag.Parse()
 
         // Set up a configuration.
@@ -58,13 +58,14 @@ func Connect() {
             fmt.Fprint(os.Stderr, usageMsg)
             os.Exit(2)
         }
+
         if *code == "" {
             // Get an authorization code from the data provider.
             // ("Please ask the user if I can access this resource.")
             url := config.AuthCodeURL("")
             fmt.Println("Visit this URL to get a code, then run again with -code=YOUR_CODE\n")
             fmt.Println(url)
-            return
+            return url
         }
         
         // Exchange the authorization code for an access token.
@@ -96,6 +97,8 @@ func Connect() {
 
     // Send final carriage return, just to be neat.
     fmt.Println()
+
+    return "fail"
 }
 
 func GetRequest(url string) {
