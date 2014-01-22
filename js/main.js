@@ -5,7 +5,8 @@ require.config({
         'jquery': 'externals/jquery/jquery-2.0.3.min',
         'jqueryuiwidget': 'externals/jqueryui/jquery.ui.widget',
         'bootstrap': 'externals/bootstrap/bootstrap.min',
-        'facebookAll': 'externals/facebook/all.min'
+        'facebookAll': 'externals/facebook/all.min',
+        'gapi': 'externals/gplus/plusone.min'
     },
 
     // Configure the dependencies and exports for older, traditional "browser globals" - 
@@ -29,9 +30,10 @@ require.config({
 require([
         'jquery',
         'modules/twitter/twitter_widget',
-        'modules/facebook/facebook_widget'
+        'modules/facebook/facebook_widget',
+        'gapi'
     ], 
-    function ($, jquerynewmodule, jqueryoldmodule) {
+    function ($) {
         $(document).ready(function() {
             // $(".ps-js-twitter").twitterSync();
             // $(".ps-js-facebook").facebookSync();
