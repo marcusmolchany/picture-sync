@@ -11,8 +11,8 @@ import (
 )
 
 var (
-    clientId     = flag.String("id", "320731813162.apps.googleusercontent.com", "Client ID")
-    clientSecret = flag.String("secret", "JDKYH4I4AOpHkT18zdUlvSay", "Client Secret")
+    clientId     = flag.String("id", "386556024065.apps.googleusercontent.com", "Client ID")
+    clientSecret = flag.String("secret", "_aF4ii4bJ9HtVqzYWlz9WmDQ", "Client Secret")
     scope        = flag.String("scope", "https://www.googleapis.com/auth/userinfo.profile", "OAuth scope")
     redirectURL  = flag.String("redirect_url", "http://localhost/", "Redirect URL")
     authURL      = flag.String("auth_url", "https://accounts.google.com/o/oauth2/auth", "Authentication URL")
