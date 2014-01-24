@@ -1,5 +1,3 @@
-{{define "base"}}
-
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -9,7 +7,7 @@
 
         <link rel="stylesheet" type="text/css" href="/css/app.css">
 
-        <title>Picture Sync</title>
+        <title>{{ .ApplicationName }}</title>
     </head>
     <body>
         <div id="fb-root"></div>
@@ -24,7 +22,7 @@
 
                 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                     <ul class="nav navbar-nav">
-                        <li><a href="/">Boom</a></li>
+                        <li><a href="/redirect">Google Plus Redirect</a></li>
                         <li><a href="#">Bam</a></li>
                     </ul>
                 </div>
@@ -44,8 +42,18 @@
                         <div class="ps-js-profile-name ps-profile-name ps-centered">Your profile name</div>
                         <button type="button" class="ps-js-upload ps-max-width btn btn-success">Upload and change</button>
                     </div>
-                    <div class="col-md-4 ps-js-instragram">
-                        <h3>Instagram?</h3>
+                    <div class="col-md-4 ps-js-gplus">
+                        <h3>Google Plus</h3>
+                        <div style="display: none">
+                            <button class="g-signin"
+                                data-scope="https://www.googleapis.com/auth/plus.login"
+                                data-requestvisibleactions="http://schemas.google.com/AddActivity"
+                                data-clientId="{{ .ClientID }}"
+                                data-accesstype="offline"
+                                data-callback="onSignInCallback"
+                                data-cookiepolicy="single_host_origin">
+                            </button>
+                        </div>
                         <img class="ps-js-profile-pic ps-max-width img-rounded" src="img/download.png" alt="...">
                         <div class="ps-js-profile-name ps-profile-name ps-centered">Your profile name</div>
                         <button type="button" class="ps-js-upload ps-max-width btn btn-danger">Upload and change</button>
@@ -61,4 +69,26 @@
     </body>
 </html>
 
-{{end}}
+<script type="text/javascript">
+
+function onSignInCallback(authResult) {
+    if (authResult['access_token']) {
+        // The user is signed in
+        this.authResult = authResult;
+        // After we load the Google+ API, render the profile data from Google+.
+        gapi.client.load('plus','v1',this.renderProfile);
+    }
+}
+
+/**
+ * Retrieves and renders the authenticated user's Google+ profile.
+ */
+function renderProfile() {
+    var request = gapi.client.plus.people.get( {'userId' : 'me'} );
+    $(".g-sigin").remove();
+    request.execute( function(profile) {
+        $(".ps-js-gplus .ps-js-profile-name").text(profile.displayName);
+    });
+}
+
+</script>

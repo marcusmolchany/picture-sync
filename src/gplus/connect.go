@@ -1,99 +1,266 @@
 package gplus
 
 import (
-    "flag"
+    "encoding/json"
+    "errors"
     "fmt"
-    "io"
+    "io/ioutil"
     "log"
-    "os"
+    "net/http"
+    "net/url"
+    "strings"
 
     "code.google.com/p/goauth2/oauth"
+    "code.google.com/p/google-api-go-client/plus/v1"
+
+    "picture-sync/src/common"
 )
 
-var (
-    clientId     = flag.String("id", "320731813162.apps.googleusercontent.com", "Client ID")
-    clientSecret = flag.String("secret", "JDKYH4I4AOpHkT18zdUlvSay", "Client Secret")
-    scope        = flag.String("scope", "https://www.googleapis.com/auth/userinfo.profile", "OAuth scope")
-    redirectURL  = flag.String("redirect_url", "http://localhost:8080/", "Redirect URL")
-    authURL      = flag.String("auth_url", "https://accounts.google.com/o/oauth2/auth", "Authentication URL")
-    tokenURL     = flag.String("token_url", "https://accounts.google.com/o/oauth2/token", "Token URL")
-    requestURL   = flag.String("request_url", "https://www.googleapis.com/oauth2/v1/userinfo", "API request")
-    code         = flag.String("code", "", "Authorization Code")
-    cachefile    = flag.String("cache", "cache.json", "Token cache file")
+const (
+    ClientID        = "293255378231-qn21vpjvse30r3ejonc341b2hfle2p07.apps.googleusercontent.com"
+    ClientSecret    = "gkpiP6-uEQx_T0l-Imz8eGUu"
+    ApplicationName = "gplus-quickstart"
 )
 
-const usageMsg = `
-To obtain a request token you must specify both -id and -secret.
+// config is the configuration specification supplied to the OAuth package.
+var config = &oauth.Config{
+    ClientId:     ClientID,
+    ClientSecret: ClientSecret,
+    // Scope determines which API calls you are authorized to make
+    Scope:    "https://www.googleapis.com/auth/plus.login",
+    AuthURL:  "https://accounts.google.com/o/oauth2/auth",
+    TokenURL: "https://accounts.google.com/o/oauth2/token",
+    // Use "postmessage" for the code-flow for server side apps
+    RedirectURL: "postmessage",
+}
 
-To obtain Client ID and Secret, see the "OAuth 2 Credentials" section under
-the "API Access" tab on this page: https://code.google.com/apis/console/
+// Token represents an OAuth token response.
+type Token struct {
+    AccessToken string `json:"access_token"`
+    TokenType   string `json:"token_type"`
+    ExpiresIn   int    `json:"expires_in"`
+    IdToken     string `json:"id_token"`
+}
 
-Once you have completed the OAuth flow, the credentials should be stored inside
-the file specified by -cache and you may run without the -id and -secret flags.
-`
+// ClaimSet represents an IdToken response.
+type ClaimSet struct {
+    Sub string
+}
 
-func Connect() {
-    flag.Parse()
+// connect exchanges the one-time authorization code for a token and common.Stores the
+// token in the session
+func Connect(w http.ResponseWriter, r *http.Request) *common.AppError {
+    // Ensure that the request is not a forgery and that the user sending this
+    // connect request is the expected user
+    session, err := common.Store.Get(r, "sessionName")
+    
+    if err != nil {
+        log.Println("error fetching session:", err)
+        return &common.AppError{err, "Error fetching session", 500}
+    }
+    
+    if r.FormValue("state") != session.Values["state"].(string) {
+        m := "Invalid state parameter"
+        return &common.AppError{errors.New(m), m, 401}
+    }
+    
+    // Normally, the state is a one-time token; however, in this example, we want
+    // the user to be able to connect and disconnect without reloading the page.
+    // Thus, for demonstration, we don't implement this best practice.
+    // session.Values["state"] = nil
 
-        // Set up a configuration.
-    config := &oauth.Config{
-        ClientId:     *clientId,
-        ClientSecret: *clientSecret,
-        RedirectURL:  *redirectURL,
-        Scope:        *scope,
-        AuthURL:      *authURL,
-        TokenURL:     *tokenURL,
-        TokenCache:   oauth.CacheFile(*cachefile),
+    // Setup for fetching the code from the request payload
+    x, err := ioutil.ReadAll(r.Body)
+    
+    if err != nil {
+        return &common.AppError{err, "Error reading code in request body", 500}
     }
 
-    // Set up a Transport using the config.
-    transport := &oauth.Transport{Config: config}
-
-    // Try to pull the token from the cache; if this fails, we need to get one.
-    token, err := config.TokenCache.Token()
-
+    code := string(x)
+    accessToken, idToken, err := exchange(code)
+    
     if err != nil {
-        if *clientId == "" || *clientSecret == "" {
-            flag.Usage()
-            fmt.Fprint(os.Stderr, usageMsg)
-            os.Exit(2)
-        }
-        if *code == "" {
-            // Get an authorization code from the data provider.
-            // ("Please ask the user if I can access this resource.")
-            url := config.AuthCodeURL("")
-            fmt.Println("Visit this URL to get a code, then run again with -code=YOUR_CODE\n")
-            fmt.Println(url)
-            return
+        return &common.AppError{err, "Error exchanging code for access token", 500}
+    }
+    
+    gplusID, err := decodeIdToken(idToken)
+    
+    if err != nil {
+        return &common.AppError{err, "Error decoding ID token", 500}
+    }
+
+    // Check if the user is already connected
+    storedToken := session.Values["accessToken"]
+    storedGPlusID := session.Values["gplusID"]
+    
+    if storedToken != nil && storedGPlusID == gplusID {
+        m := "Current user already connected"
+        return &common.AppError{errors.New(m), m, 200}
+    }
+
+    // Store the access token in the session for later use
+    session.Values["accessToken"] = accessToken
+    session.Values["gplusID"] = gplusID
+    session.Save(r, w)
+    
+    return nil
+}
+
+// disconnect revokes the current user's token and resets their session
+func Disconnect(w http.ResponseWriter, r *http.Request) *common.AppError {
+    // Only disconnect a connected user
+    session, err := common.Store.Get(r, "sessionName")
+    
+    if err != nil {
+        log.Println("error fetching session:", err)
+        
+        return &common.AppError{err, "Error fetching session", 500}
+    }
+    
+    token := session.Values["accessToken"]
+    
+    if token == nil {
+        m := "Current user not connected"
+        
+        return &common.AppError{errors.New(m), m, 401}
+    }
+
+    // Execute HTTP GET request to revoke current token
+    url := "https://accounts.google.com/o/oauth2/revoke?token=" + token.(string)
+    resp, err := http.Get(url)
+    
+    if err != nil {
+        m := "Failed to revoke token for a given user"
+        
+        return &common.AppError{errors.New(m), m, 400}
+    }
+    
+    defer resp.Body.Close()
+
+    // Reset the user's session
+    session.Values["accessToken"] = nil
+    session.Save(r, w)
+    
+    return nil
+}
+
+// people fetches the list of people user has shared with this app
+func People(w http.ResponseWriter, r *http.Request) *common.AppError {
+    session, err := common.Store.Get(r, "sessionName")
+    
+    if err != nil {
+        log.Println("error fetching session:", err)
+        
+        return &common.AppError{err, "Error fetching session", 500}
+    }
+    
+    token := session.Values["accessToken"]
+    
+    // Only fetch a list of people for connected users
+    if token == nil {
+        m := "Current user not connected"
+        
+        return &common.AppError{errors.New(m), m, 401}
+    }
+
+    // Create a new authorized API client
+    t := &oauth.Transport{Config: config}
+    tok := new(oauth.Token)
+    tok.AccessToken = token.(string)
+    t.Token = tok
+    service, err := plus.New(t.Client())
+    
+    if err != nil {
+        return &common.AppError{err, "Create Plus Client", 500}
+    }
+
+    // Get a list of people that this user has shared with this app
+    people := service.People.List("me", "visible")
+    peopleFeed, err := people.Do()
+    
+    if err != nil {
+        m := "Failed to refresh access token"
+        
+        if err.Error() == "AccessTokenRefreshError" {
+            return &common.AppError{errors.New(m), m, 500}
         }
         
-        // Exchange the authorization code for an access token.
-        // ("Here's the code you gave the user, now give me a token!")
-        token, err = transport.Exchange(*code)
+        return &common.AppError{err, m, 500}
+    }
+    
+    w.Header().Set("Content-type", "application/json")
+    err = json.NewEncoder(w).Encode(&peopleFeed)
+    
+    if err != nil {
+        return &common.AppError{err, "Convert PeopleFeed to JSON", 500}
+    }
+    
+    return nil
+}
+
+// exchange takes an authentication code and exchanges it with the OAuth
+// endpoint for a Google API bearer token and a Google+ ID
+func exchange(code string) (accessToken string, idToken string, err error) {
+    // Exchange the authorization code for a credentials object via a POST request
+    addr := "https://accounts.google.com/o/oauth2/token"
+    values := url.Values{
+        "Content-Type":  {"application/x-www-form-urlencoded"},
+        "code":          {code},
+        "client_id":     {ClientID},
+        "client_secret": {ClientSecret},
+        "redirect_uri":  {config.RedirectURL},
+        "grant_type":    {"authorization_code"},
+    }
+    resp, err := http.PostForm(addr, values)
+    if err != nil {
+        return "", "", fmt.Errorf("Exchanging code: %v", err)
+    }
+    
+    defer resp.Body.Close()
+
+    // Decode the response body into a token object
+    var token Token
+    err = json.NewDecoder(resp.Body).Decode(&token)
+    
+    if err != nil {
+        return "", "", fmt.Errorf("Decoding access token: %v", err)
+    }
+
+    return token.AccessToken, token.IdToken, nil
+}
+
+// decodeIdToken takes an ID Token and decodes it to fetch the Google+ ID within
+func decodeIdToken (idToken string) (gplusID string, err error) {
+    // An ID token is a cryptographically-signed JSON object encoded in base 64.
+    // Normally, it is critical that you validate an ID token before you use it,
+    // but since you are communicating directly with Google over an
+    // intermediary-free HTTPS channel and using your Client Secret to
+    // authenticate yourself to Google, you can be confident that the token you
+    // receive really comes from Google and is valid. If your server passes the ID
+    // token to other components of your app, it is extremely important that the
+    // other components validate the token before using it.
+    var set ClaimSet
+    
+    if idToken != "" {
+        // Check that the padding is correct for a base64decode
+        parts := strings.Split(idToken, ".")
+        
+        if len(parts) < 2 {
+            return "", fmt.Errorf("Malformed ID token")
+        }
+        
+        // Decode the ID token
+        b, err := common.Base64Decode(parts[1])
+        
         if err != nil {
-            log.Fatal("Exchange:", err)
+            return "", fmt.Errorf("Malformed ID token: %v", err)
         }
         
-        // (The Exchange method will automatically cache the token.)
-        fmt.Printf("Token is cached in %v\n", config.TokenCache)
+        err = json.Unmarshal(b, &set)
+        
+        if err != nil {
+            return "", fmt.Errorf("Malformed ID token: %v", err)
+        }
     }
-
-    // Make the actual request using the cached token to authenticate.
-    // ("Here's the token, let me in!")
-    transport.Token = token
-
-    // Make the request.
-    r, err := transport.Client().Get(*requestURL)
-    
-    if err != nil {
-        log.Fatal("Get:", err)
-    }
-    
-    defer r.Body.Close()
-
-    // Write the response to standard output.
-    io.Copy(os.Stdout, r.Body)
-
-    // Send final carriage return, just to be neat.
-    fmt.Println()
+    return set.Sub, nil
 }
