@@ -37,6 +37,10 @@ require([
         $(document).ready(function() {
             // $(".ps-js-twitter").twitterSync();
             // $(".ps-js-facebook").facebookSync();
+
+            $("a.ps-js-gplus-signin").click(function(){
+                $(".ps-js-gplus-signin-wrap").children().children().first().click();
+            });
         });
     }
 );

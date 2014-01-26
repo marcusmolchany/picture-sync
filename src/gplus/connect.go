@@ -1,4 +1,5 @@
-// See: https://developers.google.com/+/quickstart/go
+// Reference: https://developers.google.com/+/quickstart/go
+// Reference: https://github.com/googleplus/gplus-quickstart-go
 
 package gplus
 
