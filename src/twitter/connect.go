@@ -1,6 +1,4 @@
-// See: https://developers.google.com/+/quickstart/go
-
-package gplus
+package twitter
 
 import (
     "encoding/json"
